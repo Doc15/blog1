@@ -1,0 +1,145 @@
+// заполнение listView
+string query = "select article.name_article, category.title, users.login, article.description, article.date, tags.tag_title from article join category on id_cat=id_category join users on id_us=id_user join tags on id_t=id_tag;"; // запрос значений из таблицы
+>>>
+try
+{
+conn.Open();
+MySqlDataReader rd = cmDB.ExecuteReader();
+if (rd.HasRows){
+while (rd.Read()){
+string[] row = { rd.GetString(0), rd.GetString(1), rd.GetString(2), rd.GetString(3), rd.GetString(4), rd.GetString(5)};
+var listItem = new ListViewItem(row);
+List.Items.Add(listItem);
+}}
+List.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+conn.Close();}	// поиск 
+string query = "select name_article, title, login, description, date, tag_title from article join category on id_cat=id_category join users on id_us=id_user join tags on id_t=id_tag  where concat(id_item, name_article, title, login, description, date, tag_title) like '%" + toSearch.Text + "%';"; // запрос значений из таблицы
+>>>    
+try{
+conn.Open();
+MySqlDataReader rd = cmDB.ExecuteReader();
+if (rd.HasRows){
+while (rd.Read()){
+dataGridView1.Rows.Clear();
+dataGridView1.Rows.Add(rd.GetString(0), rd.GetString(1), rd.GetString(2), rd.GetString(3), rd.GetString(4), rd.GetString(5), rd.GetString(6));
+}}
+conn.Close();}	// разворот бд
+1. mysql -u user_login -p user_pass db_name < path/to/file/dump_file_name.sql
+2. mysql -u user_login -p user_pass -h host_name
+   use db_name 
+   source path/to/file/dump_file_name.sql 
+//бэкап 
+mysqldump -u user_login -p user_pass db_name > path/to/file/dump_file_name.sql 
+или 
+mysqld -u root my_test_db > C:/my_test_db.sql
+// связи между таблицами
+ALTER TABLE Orders
+ADD FOREIGN KEY(CustomerId in orders) REFERENCES Customers(Id);
+// добавление колонки в таблицу
+ALTER TABLE table_name ADD column_name data_type attributes;
+//удаление колонки
+ALTER TABLE table_name DROP column_name;
+ //изменение имени и типа данных 
+ALTER TABLE table_name CHANGE COLUMN old_column_name new_column_name new_data_type;
+//изменение только типа
+ALTER TABLE table_name MODIFY COLUMN column_name new_data_type;
+//изменение имени таблицы
+ALTER TABLE table_name RENAME TO new_table_name;
+	// заполнение в datagrid
+string query = "select name_article, title, login, description, date, tag_title from article join category on id_cat=id_category join users on id_us=id_user join tags on id_t=id_tag;"; 
+>>>
+try{
+conn.Open();
+MySqlDataReader rd = cmDB.ExecuteReader();
+if (rd.HasRows){
+while (rd.Read()){
+dataGridView1.Rows.Add(rd.GetString(0), rd.GetString(1), rd.GetString(2), rd.GetString(3), rd.GetString(4), rd.GetString(5));
+}}
+conn.Close();	
+// заполнение comboBox
+Void getBox(ComboBox box2){
+string query = "select tag_title from tags";
+>>>
+try{
+conn.Open();
+MySqlDataReader rd = cmDB.ExecuteReader();
+if (rd.HasRows){
+while (rd.Read()){
+string row = rd.GetString(0);
+box2.Items.Add(row);}}
+conn.Close();}		
+		// дата в год-месяц-день
+dateTimePicker1.Format = DateTimePickerFormat.Custom;
+dateTimePicker1.CustomFormat = "yyyy-MM-dd";	// refresh dataGrid
+dataGridView1.Rows.Clear();
+getInfo(dataGridView1);
+// refresh 
+list.Items.Clear();
+getInfo(list);
+// update 
+string query = "UPDATE article SET name_article='" + titleBox.Text + "', id_category =" + Convert.ToString(categoryBox.SelectedIndex) + ", id_user=" + Convert.ToString(authorBox.SelectedIndex) + ", id_tag=" + Convert.ToString(tagBox.SelectedIndex) + ", date='" + date.Text + "', description='" + articleBox.Text + "' where id_item=" + IDbox.Text + ";";
+>>>
+try{
+conn.Open();
+MySqlDataReader rd = cmDB.ExecuteReader();
+conn.Close();
+MessageBox.Show("Статья отредактирована")}  	// login
+int Count = 0;
+string query = "select count(*) from users where login='" + logBox.Text + "' and password='" + passBox + "';";
+>>>   
+ try{
+conn.Open();
+Count = Convert.ToInt32(cmDB.ExecuteScalar());
+conn.Close();}
+if (Count > 0){
+main win = new main();
+win.Show();
+this.Hide();}
+else MessageBox.Show("Отстутствуют права доступа");	// выделение при клике
+titleBox.Text = dataGridView1.CurrentRow.Cells[0].Value.ToString();
+catBox.Text = dataGridView1.CurrentRow.Cells[1].Value.ToString();
+authorBox.Text = dataGridView1.CurrentRow.Cells[2].Value.ToString();
+articleBox.Text = dataGridView1.CurrentRow.Cells[3].Value.ToString();
+date.Text = dataGridView1.CurrentRow.Cells[4].Value.ToString();
+tagBox.Text = dataGridView1.CurrentRow.Cells[5].Value.ToString();
+// DBMySQLUtils
+public static MySqlConnection
+GetDBConnection(string host, int port, string database, string username, string password){
+String connString = "Server=" + host + "; Database = " + database + "; port =" + port + "; user = " + username + "; password= " + password;
+MySqlConnection conn = new MySqlConnection(connString);
+return conn;};}	// delete
+string query = "delete from table where id= '" + list.Items[list.SelectedIndices[0]].Text + "';";
+  >>>            
+try{
+conn.Open();
+MySqlDataReader rd = cmDB.ExecuteReader();
+conn.Close();
+foreach (ListViewItem item in list.SelectedItems){
+ list.Items.Remove(item);
+}}	// регистрация
+string query = "insert into users (login, password, email, id_role) values ('" + logBox.Text + "', '" + passBox.Text + "', '" + emailBox.Text + "', '" + Convert.ToString(Convert.ToInt32(Role.SelectedIndex)+1) +"');";
+ >>>
+try{
+conn.Open();
+MySqlDataReader rd = cmDB.ExecuteReader();
+conn.Close();
+MessageBox.Show("Пользователь добавлен");}
+ // DBUtils
+public static MySqlConnection GetDBConnection(){
+string host = "localhost";
+int port = 3306;
+string database = "blog";
+string username = "root";
+string password = "root";
+return DBMySQLUtils.GetDBConnection(host, port, database, username, password)	TEXT: представляет текст длиной до 65 КБ.
+INT: представляет целые числа от -2147483648 до 2147483647, занимает 4 байта
+BIGINT: представляет целые числа от -9 223 372 036 854 775 808 до 9 223 372 036 854 775 807, занимает 8 байт
+FLOAT: с плавающей точкой от -3.4028 * 1038 до 3.4028 * 1038, занимает 4 байта
+	// add
+string query = "insert into article(name_article, id_category, id_tag, id_user, date, description) values('" + textBox1.Text + "', '" + Convert.ToString(Convert.ToInt32(categoryBox.SelectedIndex) + 1) + "', '" + Convert.ToString(Convert.ToInt32(tagBox.SelectedIndex) + 1) + "', '" + Convert.ToString(Convert.ToInt32(authorBox.SelectedIndex) + 1) + "', '" + dateTimePicker1.Text + "', '" + articleBox.Text + "') ;";
+ >>>
+try{
+conn.Open();
+MySqlDataReader rd = cmDB.ExecuteReader();
+conn.Close();
+MessageBox.Show("Статья добавлена");}
